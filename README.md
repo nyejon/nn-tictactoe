@@ -31,6 +31,6 @@ To get Theano to work, you have to recompile libpython.a - follow instructions o
 
 **NOTE:** *gendef* and *dlltool* are available in TDM GCC by adding `C:\TDM-GCC-64\x86_64-w64-mingw32\bin` to the PATH.
 
-# Make sure everything is working
+## Make sure everything is working
 
 If you do the above you should be able to open python and `import theano` without getting any errors or warnings.
