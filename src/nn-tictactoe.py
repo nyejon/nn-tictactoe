@@ -3,7 +3,6 @@ import theano
 import theano.tensor as T
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
-from keras.optimizers import SGD
 from deap import base
 from deap import tools
 rng = np.random
