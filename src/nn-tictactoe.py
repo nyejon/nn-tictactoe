@@ -39,6 +39,7 @@ player_1.add(Dense(20, input_dim=9, init='uniform', activation='tanh'))
 player_1.add(Dense(20, init='uniform', activation='tanh'))
 player_1.add(Dense(9, init='uniform', activation='tanh'))
 player_1.compile(optimizer='sgd', loss='mse')
+
 #[i.shape for i in player_1.get_weights()]
 
 player_2 = Sequential()
@@ -121,8 +122,11 @@ def convert_to_matrix(vector):
 
 def AI(player):
     #board_probability = range(9)
-    board_probability = [rng.ranf() for i in xrange(9)]
-    return board_probability
+    if player == 1:
+        return player_1.predict(np.array([board]))[0]
+    else:
+        return player_2.predict(np.array([board]))[0]
+    return None
 
 player = 1
 while check_victory() == 0:
@@ -131,11 +135,8 @@ while check_victory() == 0:
     vector = convert_to_vector(player_1)
     weights = convert_to_matrix(vector)
 
-    new = np.array([board])
-    out = player_1.predict(new)
-    
     board_probability = AI(player)
-    print("")
+    print("\n")
     play_move(board_probability, player)
     player += 1
     if player > 2:
