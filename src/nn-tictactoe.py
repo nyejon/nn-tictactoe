@@ -1,10 +1,10 @@
-import numpy
+import numpy as np
 import theano
 import theano.tensor as T
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
 from keras.optimizers import SGD
-rng = numpy.random
+rng = np.random
 
 
 #              0 | 1 | 2
@@ -30,9 +30,15 @@ player_1 = Sequential()
 # Dense(64) is a fully-connected layer with 64 hidden units.
 # in the first layer, you must specify the expected input data shape:
 # here, 20-dimensional vectors.
-player_1.add(Dense(64, input_dim=9, init='uniform', activation='tanh'))
-player_1.add(Dense(64, init='uniform', activation='tanh'))
+player_1.add(Dense(20, input_dim=9, init='uniform', activation='tanh'))
 player_1.add(Dense(9, init='uniform', activation='tanh'))
+
+player_2 = Sequential()
+# Dense(64) is a fully-connected layer with 64 hidden units.
+# in the first layer, you must specify the expected input data shape:
+# here, 20-dimensional vectors.
+player_2.add(Dense(20, input_dim=9, init='uniform', activation='tanh'))
+player_2.add(Dense(9, init='uniform', activation='tanh'))
 
 
 def check_victory():
