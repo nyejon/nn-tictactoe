@@ -24,6 +24,9 @@ vertical = [range(i, i + 9, 3) for i in xrange(0, 3)]
 diagonals = [[0, 4, 8], [2, 4, 6]]
 victory = horizontal + vertical + diagonals
 
+weight_shapes = []
+
+
 # board = [1,1,1,0,0,0,2,2,0]
 board = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -44,6 +47,10 @@ player_2.add(Dense(9, input_dim=1, init='uniform', activation='tanh'))
 player_2.add(Dense(20, init='uniform', activation='tanh'))
 player_2.add(Dense(9, init='uniform', activation='tanh'))
 player_2.compile(optimizer='sgd', loss='mse')
+
+
+
+
 
 def check_victory():
     # check if any of the victory lines have been filled by a single player
@@ -81,6 +88,38 @@ def draw_board():
     print ("------")
     print ("%s|%s|%s" % (convert_output(board[6]), convert_output(board[7]), convert_output(board[8])))
 
+
+def convert_to_vector(model):
+    weights = model.get_weights()
+    unrolled = []
+    global weight_shapes
+    weight_shapes = []
+    for weight in weights:
+        unrolled.append((weight.T).ravel())
+        weight_shapes.append(weight.shape)
+    vector = np.concatenate(unrolled)
+    return vector
+
+
+def convert_to_matrix(vector):
+    sizes = []
+    sizeTot = 0
+    for weight in weight_shapes:
+        if len(weight) > 1:
+            size = weight[0]*weight[1]
+        else:
+            size = weight[0]
+        sizeTot += size
+        sizes.append(sizeTot)
+
+    rolled = np.split(vector, sizes)
+    reshaped = []
+    for roll, shape in zip(rolled, weight_shapes):
+        new = np.reshape(roll, shape)
+        reshaped.append(new)
+    return reshaped
+
+
 def AI(player):
     #board_probability = range(9)
     board_probability = [rng.ranf() for i in xrange(9)]
@@ -89,6 +128,10 @@ def AI(player):
 player = 1
 while check_victory() == 0:
     draw_board()
+
+    vector = convert_to_vector(player_1)
+    weights = convert_to_matrix(vector)
+
     board_probability = AI(player)
     print("")
     play_move(board_probability, player)
