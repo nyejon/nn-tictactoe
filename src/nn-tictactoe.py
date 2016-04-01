@@ -25,6 +25,16 @@ victory = horizontal + vertical + diagonals
 # board = [1,1,1,0,0,0,2,2,0]
 board = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
+#define our two players, X and O
+player_1 = Sequential()
+# Dense(64) is a fully-connected layer with 64 hidden units.
+# in the first layer, you must specify the expected input data shape:
+# here, 20-dimensional vectors.
+player_1.add(Dense(64, input_dim=9, init='uniform', activation='tanh'))
+player_1.add(Dense(64, init='uniform', activation='tanh'))
+player_1.add(Dense(9, init='uniform', activation='tanh'))
+
+
 def check_victory():
     # check if any of the victory lines have been filled by a single player
     if any(all(board[j] == 1 for j in i) for i in victory):
@@ -64,22 +74,6 @@ def draw_board():
 def AI(player):
     #board_probability = range(9)
     board_probability = [rng.ranf() for i in xrange(9)]
-    model = Sequential()
-    # Dense(64) is a fully-connected layer with 64 hidden units.
-    # in the first layer, you must specify the expected input data shape:
-    # here, 20-dimensional vectors.
-    model.add(Dense(64, input_dim=9, init='uniform'))
-    model.add(Activation('tanh'))
-    model.add(Dense(64, init='uniform'))
-    model.add(Activation('tanh'))
-    model.add(Dense(10, init='uniform'))
-    model.add(Activation('tanh'))
-
-    sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
-    model.compile(loss='categorical_crossentropy',
-                  optimizer=sgd)
-
-    score = model.evaluate(X_test, y_test, batch_size=16)
     return board_probability
 
 player = 1
