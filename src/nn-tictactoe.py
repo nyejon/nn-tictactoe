@@ -4,6 +4,8 @@ import theano.tensor as T
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
 from keras.optimizers import SGD
+from deap import base
+from deap import tools
 rng = np.random
 
 
@@ -26,20 +28,22 @@ victory = horizontal + vertical + diagonals
 board = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 #define our two players, X and O
-player_1 = Sequential()
-# Dense(64) is a fully-connected layer with 64 hidden units.
+
+# Dense(X) is a fully-connected layer with X hidden units.
 # in the first layer, you must specify the expected input data shape:
-# here, 20-dimensional vectors.
-player_1.add(Dense(20, input_dim=9, init='uniform', activation='tanh'))
+# here, a 9-dimensional vector.
+player_1 = Sequential()
+player_1.add(Dense(9, input_dim=1, init='uniform', activation='tanh'))
+player_1.add(Dense(20, init='uniform', activation='tanh'))
 player_1.add(Dense(9, init='uniform', activation='tanh'))
+player_1.compile(optimizer='sgd', loss='mse')
+#[i.shape for i in player_1.get_weights()]
 
 player_2 = Sequential()
-# Dense(64) is a fully-connected layer with 64 hidden units.
-# in the first layer, you must specify the expected input data shape:
-# here, 20-dimensional vectors.
-player_2.add(Dense(20, input_dim=9, init='uniform', activation='tanh'))
+player_2.add(Dense(9, input_dim=1, init='uniform', activation='tanh'))
+player_2.add(Dense(20, init='uniform', activation='tanh'))
 player_2.add(Dense(9, init='uniform', activation='tanh'))
-
+player_2.compile(optimizer='sgd', loss='mse')
 
 def check_victory():
     # check if any of the victory lines have been filled by a single player
