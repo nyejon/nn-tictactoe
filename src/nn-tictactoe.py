@@ -35,14 +35,14 @@ board = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 # in the first layer, you must specify the expected input data shape:
 # here, a 9-dimensional vector.
 player_1 = Sequential()
-player_1.add(Dense(9, input_dim=1, init='uniform', activation='tanh'))
+player_1.add(Dense(20, input_dim=9, init='uniform', activation='tanh'))
 player_1.add(Dense(20, init='uniform', activation='tanh'))
 player_1.add(Dense(9, init='uniform', activation='tanh'))
 player_1.compile(optimizer='sgd', loss='mse')
 #[i.shape for i in player_1.get_weights()]
 
 player_2 = Sequential()
-player_2.add(Dense(9, input_dim=1, init='uniform', activation='tanh'))
+player_2.add(Dense(20, input_dim=9, init='uniform', activation='tanh'))
 player_2.add(Dense(20, init='uniform', activation='tanh'))
 player_2.add(Dense(9, init='uniform', activation='tanh'))
 player_2.compile(optimizer='sgd', loss='mse')
@@ -131,6 +131,9 @@ while check_victory() == 0:
     vector = convert_to_vector(player_1)
     weights = convert_to_matrix(vector)
 
+    new = np.array([board])
+    out = player_1.predict(new)
+    
     board_probability = AI(player)
     print("")
     play_move(board_probability, player)
