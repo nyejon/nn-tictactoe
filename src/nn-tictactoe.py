@@ -124,10 +124,10 @@ def AI(player):
 player = 1
 while check_victory() == 0:
     draw_board()
-    print([i.shape for i in player_1.get_weights()])
+
     vector = convert_to_vector(player_1)
     weights = convert_to_matrix(vector)
-    print([i.shape for i in weights])
+
     board_probability = AI(player)
     print("")
     play_move(board_probability, player)
