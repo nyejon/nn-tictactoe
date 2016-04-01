@@ -42,9 +42,19 @@ def play_move(board_probability, player):
             return
 
 def draw_board():
-    print board[0], board[1], board[2]
-    print board[3], board[4], board[5]
-    print board[6], board[7], board[8]
+    def convert_output(state):
+        if state == 0:
+            return (" ")
+        elif state == 1:
+            return ("O")
+        else:
+            return("X")
+
+    print ("%s|%s|%s" % (convert_output(board[0]), convert_output(board[1]), convert_output(board[2])))
+    print ("------")
+    print ("%s|%s|%s" % (convert_output(board[3]), convert_output(board[4]), convert_output(board[5])))
+    print ("------")
+    print ("%s|%s|%s" % (convert_output(board[6]), convert_output(board[7]), convert_output(board[8])))
 
 player = 1
 while check_victory() == 0:
