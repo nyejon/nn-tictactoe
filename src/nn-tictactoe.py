@@ -46,10 +46,15 @@ def draw_board():
     print board[3], board[4], board[5]
     print board[6], board[7], board[8]
 
+def AI(player):
+    #board_probability = range(9)
+    board_probability = [rng.ranf() for i in xrange(9)]
+    return board_probability
+
 player = 1
 while check_victory() == 0:
     draw_board()
-    board_probability = [rng.ranf() for i in xrange(9)]
+    board_probability = AI(player)
     print
     play_move(board_probability, player)
     player += 1
