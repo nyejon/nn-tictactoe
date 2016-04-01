@@ -22,16 +22,15 @@ victory = horizontal + vertical + diagonals
 # board = [1,1,1,0,0,0,2,2,0]
 board = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-
 def check_victory():
     # check if any of the victory lines have been filled by a single player
     if any(all(board[j] == 1 for j in i) for i in victory):
-        return (1)  # player 1 wins
+        return 1  # player 1 wins
     elif any(all(board[j] == 2 for j in i) for i in victory):
-        return (2)  # player 2 wins
+        return 2  # player 2 wins
     elif all(board[i] != 0 for i in xrange(9)):
-        return (-1)  # draw
-    return (0)  # no winner yet
+        return -1  # draw
+    return 0  # no winner yet
 
 
 def play_move(board_probability, player):
@@ -46,12 +45,12 @@ def play_move(board_probability, player):
 
 def draw_board():
     def convert_output(state):
-        if state == 0:
-            return (" ")
-        elif state == 1:
-            return ("O")
+        if state == 1:
+            return "O"
+        elif state == 2:
+            return "X"
         else:
-            return("X")
+            return " "
 
     print ("%s|%s|%s" % (convert_output(board[0]), convert_output(board[1]), convert_output(board[2])))
     print ("------")
