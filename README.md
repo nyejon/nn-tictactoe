@@ -6,7 +6,7 @@ Testing NNs to learn the simple game of TicTacToe
 
 Install Python 2.7 64-bit. We are running `Python 2.7.9 (default, Dec 10 2014, 12:28:03) [MSC v.1500 64 bit (AMD64)] on win32`
 
-Install Visual C++ compiler for Python from: <https://www.microsoft.com/en-us/download/details.aspx?id=44266> **NOTE:** run the following command to install the compiler: `msiexec /i VCForPython27.msi ALLUSERS=1`
+Install Visual C++ compiler for Python from: <https://www.microsoft.com/en-us/download/details.aspx?id=44266> **NOTE:** run the following command (from Administrator command prompt) to install the compiler: `msiexec /i VCForPython27.msi ALLUSERS=1`
 
 Download stdint.h from http://msinttypes.googlecode.com/svn/trunk/stdint.h and then copy it into `C:\Program Files (x86)\Common Files\Microsoft\Visual C++ for Python\9.0\VC\include`
 
@@ -34,3 +34,8 @@ To get Theano to work, you have to recompile libpython.a - follow instructions o
 ## Make sure everything is working
 
 If you do the above you should be able to open python and `import theano` without getting any errors or warnings.
+
+If you get an error about `Couldn't import dot_parser, loading of dot files will not be possible.` then run the following:
+
+    pip install pyparsing==1.5.7
+    pip install pydot==1.0.28
