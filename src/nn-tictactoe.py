@@ -25,34 +25,30 @@ victory = horizontal + vertical + diagonals
 
 weight_shapes = []
 
-
-# board = [1,1,1,0,0,0,2,2,0]
-board = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-
 #define our two players, X and O
 
 # Dense(X) is a fully-connected layer with X hidden units.
 # in the first layer, you must specify the expected input data shape:
 # here, a 9-dimensional vector.
-player_1 = Sequential()
-player_1.add(Dense(20, input_dim=9, init='uniform', activation='tanh'))
-player_1.add(Dense(20, init='uniform', activation='tanh'))
-player_1.add(Dense(9, init='uniform', activation='tanh'))
-player_1.compile(optimizer='sgd', loss='mse')
-
+#player_1 = Sequential()
+#player_1.add(Dense(20, input_dim=9, init='uniform', activation='tanh'))
+#player_1.add(Dense(20, init='uniform', activation='tanh'))
+#player_1.add(Dense(9, init='uniform', activation='tanh'))
+#player_1.compile(optimizer='sgd', loss='mse')
 #[i.shape for i in player_1.get_weights()]
 
-player_2 = Sequential()
-player_2.add(Dense(20, input_dim=9, init='uniform', activation='tanh'))
-player_2.add(Dense(20, init='uniform', activation='tanh'))
-player_2.add(Dense(9, init='uniform', activation='tanh'))
-player_2.compile(optimizer='sgd', loss='mse')
+
+def create_player():
+    player = Sequential()
+    player.add(Dense(20, input_dim=9, init='uniform', activation='tanh'))
+    player.add(Dense(20, init='uniform', activation='tanh'))
+    player.add(Dense(9, init='uniform', activation='tanh'))
+    player.compile(optimizer='sgd', loss='mse')
+    return player
 
 
 
-
-
-def check_victory():
+def check_victory(board):
     # check if any of the victory lines have been filled by a single player
     if any(all(board[j] == 1 for j in i) for i in victory):
         return 1  # player 1 wins
@@ -63,7 +59,7 @@ def check_victory():
     return 0  # no winner yet
 
 
-def play_move(board_probability, player):
+def play_move(board_probability, player, board):
     # get the moves in order of highest rating / probability
     moves = sorted(enumerate(board_probability), key=lambda x: x[1], reverse=True)
     # try and play each of the moves from best to worst
@@ -73,7 +69,7 @@ def play_move(board_probability, player):
             return
 
 
-def draw_board():
+def draw_board(board):
     def convert_output(state):
         if state == 1:
             return "O"
@@ -87,6 +83,7 @@ def draw_board():
     print ("%s|%s|%s" % (convert_output(board[3]), convert_output(board[4]), convert_output(board[5])))
     print ("------")
     print ("%s|%s|%s" % (convert_output(board[6]), convert_output(board[7]), convert_output(board[8])))
+    print("\n")
 
 
 def convert_to_vector(model):
@@ -100,7 +97,10 @@ def convert_to_vector(model):
     vector = np.concatenate(unrolled)
     return vector
 
-
+"""
+vector = convert_to_vector(player_1)
+weights = convert_to_matrix(vector)
+"""
 def convert_to_matrix(vector):
     sizes = []
     sizeTot = 0
@@ -120,36 +120,70 @@ def convert_to_matrix(vector):
     return reshaped
 
 
-def AI(player):
-    #board_probability = range(9)
-    if player == 1:
-        return player_1.predict(np.array([board]))[0]
-    else:
-        return player_2.predict(np.array([board]))[0]
-    return None
+def AI(player, board):
+    return player.predict(np.array([board]))[0]
 
-player = 1
-while check_victory() == 0:
-    draw_board()
+def play_game(player_1, player_2):
+    player = 1
+    victor = 0
+    board = [0, 0, 0, 0, 0, 0, 0, 0, 0] #create a fresh board for the game
+    while victor == 0:
+        #draw_board(board)
+        player_model = player_1 if player == 1 else player_2
+        board_probability = AI(player_model, board)
+        play_move(board_probability, player, board)
+        #check for victory
+        victor = check_victory(board)
+        #rotate the player:
+        player += 1
+        if player > 2:
+            player = 1
+    draw_board(board)
+    return victor
 
-    vector = convert_to_vector(player_1)
-    weights = convert_to_matrix(vector)
+def evaluate(player_roster):
+    # every player will play every other player and the scores will be tallied
+    scores = [0 for i in xrange(len(player_roster))]
+    for i, player_1 in enumerate(player_roster):
+        for j, player_2 in enumerate(player_roster):
+            #don't play yourself bro
+            if i == j:
+                continue
+            print "*" * 80
+            print "NOW FIGHTING: Players {} and {}".format(i,j)
+            print "*" * 80
+            result = best_of_10(player_1, player_2)
+            print "RESULTING SCORES: {} and {}".format(result[0], result[1])
+            print "\n\n"
+            #the scores are a vector, add each player's score to their total
+            scores[i] += result[0]
+            scores[j] += result[1]
+    print "\n\n\nAND THE FINAL SCORES ARE:"
+    print scores
 
-    board_probability = AI(player)
-    print("\n")
-    play_move(board_probability, player)
-    player += 1
-    if player > 2:
-        player = 1
+def best_of_10(player_1, player_2):
+    score = [0,0] #[player 1, player 2]
+    #the players take turns going first (5 each)
+    #unfortunately, at the moment the bots never play differently so there's no point in a BO10 - need to fix this later by tweaking the AI() function
+    #for i in xrange(5):
+    victor = play_game(player_1, player_2)
+    if victor > 0:
+        score[victor - 1] += 1
+    #for i in xrange(5):
+    victor = play_game(player_2, player_1)
+    if victor > 0:
+        score[victor - 1] += 1
+    return score
 
-draw_board()
+player_roster = [create_player() for i in xrange(10)] # our players
+evaluate(player_roster)
 
 print ("=" * 80)
 
-victor = check_victory()
-if victor in (1, 2):
-    print ("player %s wins" % victor)
-else:
-    print (victor, "it was a draw")
+#victor = check_victory()
+#if victor in (1, 2):
+#    print ("player %s wins" % victor)
+#else:
+#    print (victor, "it was a draw")
 
 
