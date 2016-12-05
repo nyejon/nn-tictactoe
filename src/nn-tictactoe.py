@@ -25,20 +25,11 @@ victory = horizontal + vertical + diagonals
 
 weight_shapes = []
 
-# define our two players, X and O
-
-# Dense(X) is a fully-connected layer with X hidden units.
-# in the first layer, you must specify the expected input data shape:
-# here, a 9-dimensional vector.
-# player_1 = Sequential()
-# player_1.add(Dense(20, input_dim=9, init='uniform', activation='tanh'))
-# player_1.add(Dense(20, init='uniform', activation='tanh'))
-# player_1.add(Dense(9, init='uniform', activation='tanh'))
-# player_1.compile(optimizer='sgd', loss='mse')
-# [i.shape for i in player_1.get_weights()]
-
 
 def create_player():
+    # Dense(X) is a fully-connected layer with X hidden units.
+    # in the first layer, you must specify the expected input data shape:
+    # here, a 9-dimensional vector.
     player = Sequential()
     player.add(Dense(20, input_dim=9, init='uniform', activation='tanh'))
     player.add(Dense(20, init='uniform', activation='tanh'))
@@ -156,7 +147,7 @@ def evaluate(player_roster):
             print("*" * 80)
             print("NOW FIGHTING: Players {} and {}".format(i, j))
             print("*" * 80)
-            result = best_of_10(player_1, player_2)
+            result = best_of_2(player_1, player_2)
             print("RESULTING SCORES: {} and {}".format(result[0], result[1]))
             print("\n\n")
             # the scores are a vector, add each player's score to their total
@@ -166,28 +157,20 @@ def evaluate(player_roster):
     print(scores)
 
 
-def best_of_10(player_1, player_2):
-    score = [0, 0]  # [player 1, player 2]
-    # the players take turns going first (5 each)
-    # unfortunately, at the moment the bots never play differently so there's no point in a BO10
-    # --> need to fix this later by tweaking the AI() function
+def best_of_2(player_1, player_2):
+    score = [0, 0, 0]  # [draws, player 1, player 2]
+    # the players take turns going first (1 each)
+    # unfortunately, at the moment the bots never play differently so there's no point in more than 2 games
+    # --> can fix this later by tweaking the AI() function to not play 100% deterministically
     # for i in xrange(5):
     victor = play_game(player_1, player_2)
-    if victor > 0:
-        score[victor - 1] += 1
+    score[victor] += 1
     # for i in xrange(5):
     victor = play_game(player_2, player_1)
-    if victor > 0:
-        score[victor - 1] += 1
-    return score
+    score[victor] += 1
+    return score[1:]  #don't return the draws
 
 player_roster = [create_player() for i in range(10)]  # our players
 evaluate(player_roster)
 
 print("=" * 80)
-
-# victor = check_victory()
-# if victor in (1, 2):
-#    print ("player %s wins" % victor)
-# else:
-#    print (victor, "it was a draw")
